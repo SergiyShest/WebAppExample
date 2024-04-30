@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\WebService.BLL\WebService.BLL.csproj" />
+    <ProjectReference Include="..\WebService.BLL\WebService.BLL.csproj" />
     <ProjectReference Include="..\WebService.Core\WebService.Core.csproj" />
     <ProjectReference Include="..\WebService.DAL\WebService.DAL.csproj" />
   </ItemGroup>
