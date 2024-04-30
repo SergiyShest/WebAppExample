@@ -1,45 +1,17 @@
-﻿using Domain;
+﻿using Core;
+using DAL.Core;
 using Microsoft.EntityFrameworkCore;
+using WebService.BLL.Core;
+using WebService.DAL.Core;
 
 namespace WebService.BLL
 {
-    public class EntityService : IEntityService<Entity>
+
+    public class EntityService : GenericService<Entity>, IEntityService
     {
-        private readonly IApplicationDbContext _context;
-        public EntityService(IApplicationDbContext context)
-        {
-            _context = context;
-        }
-        public async Task<Entity> FindAsync(Guid id)
-        {
-            return await _context.Entities.FindAsync(id);
-        }
-
-        public async Task<Entity> AddAsync(Entity entity)
-        {
-            _context.Entities.Add(entity);
-            await _context.SaveChangesAsync();
-            return entity;
-        }
-
-        public async Task<Entity> UpdateAsync(Entity entity)
-        {
-            var existingEntity = await _context.Entities.FindAsync(entity.Id);
-            if (existingEntity != null)
-            {
-                existingEntity.Amount = entity.Amount;
-                existingEntity.OperationDate = entity.OperationDate;
-                await _context.SaveChangesAsync();
-            }
-            return existingEntity;
-        }
-
-        public Task<Entity> DeleteAsync(Guid id)
-        {
-            throw new NotImplementedException();
-        }
+        public EntityService(IUnitOfWork uow) : base(uow) { }
     }
 
 }
 
-   
+

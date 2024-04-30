@@ -2,9 +2,12 @@ using System;
 using Xunit;
 using Microsoft.AspNetCore.Mvc;
 using WebService;
-using Domain;
+using Core;
 using Microsoft.EntityFrameworkCore;
 using WebService.BLL;
+using WebService.DAL.Core;
+using DAL.Core;
+using WebService.DAL.OptionsFactory;
 
 namespace tests
 {
@@ -15,10 +18,9 @@ namespace tests
         [Fact]
         public async Task InsertEntity()
         {
-
-            using (var context = new ApplicationDbContext(GetOptions()))
+            using (var uow = new UnitOfWork(new InMemoryOptionsFactory(Guid.NewGuid().ToString())))
             {
-                var controller = new EntitiesController(new EntityService(context));
+                var controller = new EntitiesController(new EntityService(uow));
                 // Arrange
                 var newEntity = new Entity { Amount = 100.00m };
 
@@ -31,24 +33,24 @@ namespace tests
                 Assert.Equal(200, okResult.StatusCode);
                 Assert.Equal($"Entity with ID \"{newEntity.Id}\" added.", okResult.Value);
             }
-        } 
+        }
 
         [Theory]
         [InlineData(true)]//entity mast bee find
         [InlineData(false)]//entity mast bee not find
-        public async Task GetEntity_ReturnsExpectedResult( bool shouldFindEntity)
-        { 
+        public async Task GetEntity_ReturnsExpectedResult(bool shouldFindEntity)
+        {
             // Arrange
-             Guid id= Guid.NewGuid();
-            using (var context = new ApplicationDbContext(GetOptions()))
+            Guid id = Guid.NewGuid();
+            using (var uow = new UnitOfWork(new InMemoryOptionsFactory(Guid.NewGuid().ToString())))
             {
                 if (shouldFindEntity)
                 {
-                    context.Entities.Add(new Entity { Id = id, Amount = 100.00m });
-                    await context.SaveChangesAsync();
+                    uow.GetRepository<Entity>().Create(new Entity { Id = id, Amount = 100.00m });
+                    await uow.SaveChangesAsync();
                 }
 
-                var controller = new EntitiesController(new EntityService(context));
+                var controller = new EntitiesController(new EntityService(uow));
 
                 // Act
                 var result = await controller.GetEntity(id);
@@ -65,18 +67,10 @@ namespace tests
                     var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
                     Assert.Contains(id.ToString(), notFoundResult.Value.ToString());
                 }
+
             }
         }
-
-        private static DbContextOptions<ApplicationDbContext> GetOptions()
-        {
-            var dbName= Guid.NewGuid().ToString();
-            return new DbContextOptionsBuilder<ApplicationDbContext>()
-                .UseInMemoryDatabase(databaseName: dbName)
-                .Options;
-        }
     }
-
 }
 
 

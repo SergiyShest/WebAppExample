@@ -1,7 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using WebService.DAL.Core;
 
-namespace Domain
+namespace WebService.DAL.OptionsFactory
 {
     public class SqliteOptionsFactory : IDbContextOptionsFactory
     {

@@ -1,6 +1,7 @@
-﻿using Domain;
+﻿using Core;
 using Microsoft.EntityFrameworkCore;
-namespace Domain
+using WebService.DAL.OptionsFactory;
+namespace WebService.DAL.Core
 {
     public class ApplicationDbContext : DbContext, IApplicationDbContext
     {

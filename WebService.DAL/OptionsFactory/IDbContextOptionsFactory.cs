@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using WebService.DAL.Core;
 
-namespace Domain
+namespace WebService.DAL.OptionsFactory
 {
     public interface IDbContextOptionsFactory
     {

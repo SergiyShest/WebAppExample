@@ -2,10 +2,9 @@
   "components": [
     {
       "type": " WebService.BLL.EntityService,  WebService.BLL",
-      // "type": "Domain.SqliteOptionsFactory, Domain",
       "services": [
         {
-          "type": "WebService.BLL.IEntityService`1[[Domain.Entity, Domain]], WebService.BLL"
+          "type": "WebService.BLL.IEntityService, WebService.BLL"
         }
       ],
       "lifetime": "InstancePerLifetimeScope",
@@ -13,11 +12,11 @@
     } //IEntityService
     ,
     {
-      "type": "Domain.InMemoryOptionsFactory, Domain",
-      // "type": "Domain.SqliteOptionsFactory, Domain",
+      "type": "WebService.DAL.OptionsFactory.InMemoryOptionsFactory, WebService.DAL",
+      // "type": "WebService.DAL.OptionsFactory.SqliteOptionsFactory, WebService.DAL",
       "services": [
         {
-          "type": "Domain.IDbContextOptionsFactory, Domain"
+          "type": "WebService.DAL.OptionsFactory.IDbContextOptionsFactory, WebService.DAL"
         }
       ],
       "lifetime": "InstancePerLifetimeScope",
@@ -25,10 +24,10 @@
     } //InMemoryOptionsFactory
     ,
     {
-      "type": "Domain.ApplicationDbContext, Domain",
+      "type": "WebService.DAL.Core.ApplicationDbContext, WebService.DAL",
       "services": [
         {
-          "type": "Domain.IApplicationDbContext, Domain"
+          "type": "WebService.DAL.Core.IApplicationDbContext, WebService.DAL"
         }
       ],
       "lifetime": "InstancePerLifetimeScope",

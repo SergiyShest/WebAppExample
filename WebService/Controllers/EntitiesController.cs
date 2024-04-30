@@ -1,5 +1,7 @@
-﻿using Domain;
+﻿using Core;
+
 using Microsoft.AspNetCore.Mvc;
+using WebService.BLL.Core;
 using WebService.BLL;
 namespace WebService
 {
@@ -8,8 +10,8 @@ namespace WebService
     public class EntitiesController : ControllerBase
     {
 
-        IEntityService<Entity> _service;
-        public EntitiesController(IEntityService<Entity> service)
+        IGenericService<Entity> _service;
+        public EntitiesController(IEntityService service)
         {
 
             _service = service;
@@ -23,9 +25,9 @@ namespace WebService
             var existingEntity = await _service.FindAsync(entity.Id);
             if (existingEntity == null)
             {
-               
-                var addedEntity = await _service.AddAsync(entity);
-                return Ok($"Entity with ID \"{addedEntity.Id}\" added.");
+                _service.Add(entity);
+                await _service.SaveChangesAsync();
+                return Ok($"Entity with ID \"{entity.Id}\" added.");
             }
             else
             {
