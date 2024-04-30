@@ -1,0 +1,38 @@
+{
+  "components": [
+    {
+      "type": " WebService.BLL.EntityService,  WebService.BLL",
+      // "type": "Domain.SqliteOptionsFactory, Domain",
+      "services": [
+        {
+          "type": "WebService.BLL.IEntityService`1[[Domain.Entity, Domain]], WebService.BLL"
+        }
+      ],
+      "lifetime": "InstancePerLifetimeScope",
+      "injectProperties": true
+    } //IEntityService
+    ,
+    {
+      "type": "Domain.InMemoryOptionsFactory, Domain",
+      // "type": "Domain.SqliteOptionsFactory, Domain",
+      "services": [
+        {
+          "type": "Domain.IDbContextOptionsFactory, Domain"
+        }
+      ],
+      "lifetime": "InstancePerLifetimeScope",
+      "injectProperties": true
+    } //InMemoryOptionsFactory
+    ,
+    {
+      "type": "Domain.ApplicationDbContext, Domain",
+      "services": [
+        {
+          "type": "Domain.IApplicationDbContext, Domain"
+        }
+      ],
+      "lifetime": "InstancePerLifetimeScope",
+      "injectProperties": true
+    } //ApplicationDbContext
+  ]
+}
