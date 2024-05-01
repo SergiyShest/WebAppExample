@@ -3,17 +3,16 @@ using Xunit;
 using Microsoft.AspNetCore.Mvc;
 using WebService;
 using Core;
-using Microsoft.EntityFrameworkCore;
 using WebService.BLL;
 using WebService.DAL.Core;
-using DAL.Core;
 using WebService.DAL.OptionsFactory;
+using NLog;
 
-namespace tests
+namespace Tests
 {
     public class EntitiesControllerTests
     {
-
+         ILogger Log=NLog.LogManager.GetCurrentClassLogger();
 
         [Fact]
         public async Task InsertEntity()

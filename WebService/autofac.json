@@ -1,19 +1,8 @@
 {
   "components": [
     {
-      "type": " WebService.BLL.EntityService,  WebService.BLL",
-      "services": [
-        {
-          "type": "WebService.BLL.IEntityService, WebService.BLL"
-        }
-      ],
-      "lifetime": "InstancePerLifetimeScope",
-      "injectProperties": true
-    } //IEntityService
-    ,
-    {
       "type": "WebService.DAL.OptionsFactory.InMemoryOptionsFactory, WebService.DAL",
-      // "type": "WebService.DAL.OptionsFactory.SqliteOptionsFactory, WebService.DAL",
+      // "type": "WebService.DAL.OptionsFactory.SqliteOptionsFactory, WebService.DAL", Возможно изменить тип базы без изменения приложения 
       "services": [
         {
           "type": "WebService.DAL.OptionsFactory.IDbContextOptionsFactory, WebService.DAL"
@@ -33,5 +22,28 @@
       "lifetime": "InstancePerLifetimeScope",
       "injectProperties": true
     } //ApplicationDbContext
+    ,
+    {
+      "type": " WebService.DAL.Core.UnitOfWork,  WebService.DAL",
+      "services": [
+        {
+          "type": "WebService.DAL.Core.IUnitOfWork, WebService.DAL"
+        }
+      ],
+      "lifetime": "InstancePerLifetimeScope",
+      "injectProperties": true
+    } //UnitOfWork
+    ,
+    {
+      "type": " WebService.BLL.EntityService,  WebService.BLL",
+      "services": [
+        {
+          "type": "WebService.BLL.IEntityService, WebService.BLL"
+        }
+      ],
+      "lifetime": "InstancePerLifetimeScope",
+      "injectProperties": true
+    } //EntityService
+
   ]
 }

@@ -2,7 +2,7 @@
 
 namespace WebService.BLL.Core
 {
-    public interface IGenericService<T> where T : class, IEntity
+    public interface IGenericService<T>:IDisposable where T : class, IEntity
     {
         Task<T> FindAsync(Guid id);
 

@@ -9,6 +9,8 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.4" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.4" />
+    <PackageReference Include="NLog.Extensions.Logging" Version="5.3.10" />
+    <PackageReference Include="NLog.Web.AspNetCore" Version="5.3.10" />
   </ItemGroup>
 
   <ItemGroup>

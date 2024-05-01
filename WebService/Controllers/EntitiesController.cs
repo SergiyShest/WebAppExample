@@ -1,54 +1,64 @@
 ﻿using Core;
-
 using Microsoft.AspNetCore.Mvc;
 using WebService.BLL.Core;
 using WebService.BLL;
+
 namespace WebService
 {
+    /// <summary>
+    /// Контроллер для Entity.
+    /// </summary>
     [ApiController]
     [Route("[controller]")]
     public class EntitiesController : ControllerBase
     {
+        private readonly IEntityService _entityService;
+        private readonly NLog.ILogger _logger = NLog.LogManager.GetCurrentClassLogger();
 
-        IGenericService<Entity> _service;
-        public EntitiesController(IEntityService service)
+        public EntitiesController(IEntityService entityService)
         {
+            _entityService = entityService;
 
-            _service = service;
         }
-
 
         [HttpPost("insert")]
         public async Task<IActionResult> InsertEntity([FromBody] Entity entity)
         {
-            // Проверяем, существует ли уже сущность с таким ID
-            var existingEntity = await _service.FindAsync(entity.Id);
-            if (existingEntity == null)
+            try
             {
-                _service.Add(entity);
-                await _service.SaveChangesAsync();
-                return Ok($"Entity with ID \"{entity.Id}\" added.");
+                var addedEntity = await _entityService.AddEntityAsync(entity);
+                return Ok($"Entity with ID \"{addedEntity.Id}\" added.");
             }
-            else
+            catch (InvalidOperationException ex)
             {
-                //    Если сущность существует,можно обновить ее данные, но так как в задании ни чего не сказано про это, то верну ошибку
-                return BadRequest($"Entity with ID \"{entity.Id}\" already exists!");
- 
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "Failed to insert entity");
+                return StatusCode(500, "Internal server error");
             }
         }
 
         [HttpGet("get/{id}")]
         public async Task<IActionResult> GetEntity(Guid id)
         {
-            var existingEntity = await _service.FindAsync(id);
-            if (existingEntity != null)
+            try
             {
-                 return Ok(existingEntity);
+                var entity = await _entityService.GetEntityAsync(id);
+                return Ok(entity);
             }
-            else
+            catch (KeyNotFoundException ex)
             {
-                return NotFound($"Entity with ID {id} not found.");
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "Failed to retrieve entity");
+                return StatusCode(500, "Internal server error");
             }
         }
     }
+
+
 }

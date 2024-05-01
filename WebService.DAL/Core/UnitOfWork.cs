@@ -1,67 +1,80 @@
-﻿
-using Core;
-using WebService.DAL.Core;
+﻿using Core;
 using WebService.DAL.OptionsFactory;
 
-namespace DAL.Core
-{
 
-    public class UnitOfWork : IUnitOfWork
+    namespace WebService.DAL.Core
     {
+        /// <summary>
+        /// Реализует паттерн "UnitOfWork".
+        /// </summary>
+        public class UnitOfWork : IUnitOfWork
+           {
+            private readonly Dictionary<string, IRepositary> _repos = new Dictionary<string, IRepositary>();
 
-        private readonly Dictionary<string, IRepositary> _repos = new Dictionary<string, IRepositary>();
+            /// <summary>
+            /// Контекст базы данных.
+            /// </summary>
+            public IApplicationDbContext DbContext { get; }
 
-        public IApplicationDbContext DbContext { get; }
-
-        public UnitOfWork(IDbContextOptionsFactory optionsFactory)
-        {
-            DbContext = new ApplicationDbContext(optionsFactory);
-        }
-
-        public async Task SaveChangesAsync()
-        {
-            await DbContext.SaveChangesAsync();
-        }
-       
-        public IRepositary<T> GetRepository<T>() where T : class, IEntity
-        {
-            IRepositary<T> rep;
-            if (_repos.ContainsKey(typeof(T).Name))
+            /// <summary>  
+            /// Инициализирует новый экземпляр UnitOfWork.
+            /// </summary>
+            /// <param name="optionsFactory">Фабрика для создания настроек контекста базы данных (изменение параметра позволяет изменять базу данных).</param>
+            public UnitOfWork(IDbContextOptionsFactory optionsFactory)
             {
-                rep = (IRepositary<T>)_repos[typeof(T).Name];
-            }
-            else
-            {
-                rep = new Repository<T>(this.DbContext);
-                _repos.Add(typeof(T).Name, rep);
+                DbContext = new ApplicationDbContext(optionsFactory);
             }
 
-            return rep;
-        }
-
-
-        #region IDicposable realisation
-        private bool _disposed;
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        public virtual void Dispose(bool disposing)
-        {
-            if (!_disposed)
+            /// <summary>        
+            /// Асинхронно сохраняет все изменения в контексте базы данных.
+            /// </summary>
+            /// <returns>Задача, представляющая асинхронную операцию.</returns>
+            public async Task SaveChangesAsync()
             {
-                if (disposing)
+                await DbContext.SaveChangesAsync();
+            }
+
+            /// <summary>
+            /// Получает репозиторий для указанного типа сущности, создавая его при необходимости.
+            /// </summary>
+            /// <typeparam name="T">Тип сущности.</typeparam>
+            /// <returns>Репозиторий для указанного типа сущности.</returns>
+            public IRepositary<T> GetRepository<T>() where T : class, IEntity
+            {
+                if (!_repos.ContainsKey(typeof(T).Name))
                 {
-                    DbContext.Dispose();
+                    _repos[typeof(T).Name] = new Repository<T>(this.DbContext);
                 }
-                _disposed = true;
+                return (IRepositary<T>)_repos[typeof(T).Name];
             }
+
+            #region IDisposable классическая реализация
+            private bool _disposed;
+
+            /// <summary>
+            /// Выполняет задачи, связанные с освобождением или сбросом ресурсов.
+            /// </summary>
+            public void Dispose()
+            {
+                Dispose(true);
+                GC.SuppressFinalize(this);
+            }
+
+            /// <summary>
+            /// Освобождает DbContext.
+            /// </summary>
+            /// <param name="disposing">True, если метод вызван явно.</param>
+            protected virtual void Dispose(bool disposing)
+            {
+                if (!_disposed)
+                {
+                    if (disposing)
+                    {
+                        DbContext.Dispose();
+                    }
+                    _disposed = true;
+                }
+            }
+            #endregion
         }
-
-
-        #endregion
     }
-
-}
