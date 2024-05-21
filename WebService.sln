@@ -13,6 +13,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebService.Core", "WebServi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebService.BLL", "WebService.BLL\WebService.BLL.csproj", "{FB9B8316-6973-4777-8487-B6D9180D7305}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{D0E4D388-A2B5-4165-8C2F-9EA478729131}"
+	ProjectSection(SolutionItems) = preProject
+		Readmy.txt = Readmy.txt
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

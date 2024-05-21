@@ -5,18 +5,19 @@ using WebService.DAL.OptionsFactory;
 using NLog;
 using Microsoft.Extensions.Configuration;
 using Moq;
+using Microsoft.EntityFrameworkCore;
 
 namespace Tests
 {
-    public class UowTests
+    public class UnitOfWorkTests
     {
-
         [Theory]
-        [InlineData(DbType.InMemory)]//entity mast bee find
-        [InlineData(DbType.Sqlite)]//entity mast bee not find
+        [InlineData(DbType.Sqlite)]
+        [InlineData(DbType.InMemory)]
         public async Task GetEntity_ReturnsExpectedResult(DbType dbType)
         {
             IDbContextOptionsFactory optionsFactory;
+
             if (dbType == DbType.Sqlite)
             {
                 var mockConfiguration = new Mock<IConfiguration>();
@@ -28,7 +29,7 @@ namespace Tests
 
                 // Setup the Value property to return the desired connection string
                 mockConfigurationSection.Setup(c => c["SQLiteConnection"])
-                                        .Returns("YourConnectionStringHere");
+                                        .Returns("Data Source=:memory:"); // Use in-memory SQLite database for testing
 
                 optionsFactory = new SqliteOptionsFactory(mockConfiguration.Object);
             }
@@ -40,27 +41,39 @@ namespace Tests
             // Arrange
             Guid id = Guid.NewGuid();
 
-
             using (var uow = new UnitOfWork(optionsFactory))
             {
+                await EnsureDatabaseCreatedAsync(uow,dbType);
 
                 uow.GetRepository<Entity>().Create(new Entity { Id = id, Amount = 100.00m });
                 await uow.SaveChangesAsync();
             }
 
-
-
-
+            // Act & Assert
+            using (var uow = new UnitOfWork(optionsFactory))
+            {
+                var entity = await uow.GetRepository<Entity>().FindAsync(id);
+                Assert.NotNull(entity);
+                Assert.Equal(100.00m, entity.Amount);
+            }
         }
 
-        public enum DbType
+        private async Task EnsureDatabaseCreatedAsync(UnitOfWork uow, DbType dbType)
         {
-            InMemory,
-            Sqlite
+            var context = uow.DbContext;
+            if (dbType== DbType.Sqlite)
+            {
+                await context.Database.EnsureCreatedAsync();
+                await context.Database.MigrateAsync();
+            }
         }
-
     }
 
+    public enum DbType
+    {
+        InMemory,
+        Sqlite
+    }
 }
 
 
