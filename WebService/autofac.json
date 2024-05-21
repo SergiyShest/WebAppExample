@@ -2,7 +2,7 @@
   "components": [
     {
       "type": "WebService.DAL.OptionsFactory.InMemoryOptionsFactory, WebService.DAL",
-      // "type": "WebService.DAL.OptionsFactory.SqliteOptionsFactory, WebService.DAL", Возможно изменить тип базы без изменения приложения 
+      // "type": "WebService.DAL.OptionsFactory.SqliteOptionsFactory, WebService.DAL",// Возможно изменить тип базы без изменения приложения 
       "services": [
         {
           "type": "WebService.DAL.OptionsFactory.IDbContextOptionsFactory, WebService.DAL"
