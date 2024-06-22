@@ -22,6 +22,12 @@ namespace WebService.DAL.Core
         /// </summary>
         DbSet<Entity> Entities { get; set; }
 
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+        }
+
     }
 
 }

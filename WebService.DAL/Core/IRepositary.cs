@@ -17,6 +17,14 @@ namespace WebService.DAL.Core
     /// <typeparam name="TEntity">Тип сущности, с которой работает репозиторий.</typeparam>
     public interface IRepositary<TEntity> : IRepositary where TEntity : class, IEntity
     {
+
+
+        /// <summary>
+        /// Асинхронно возвращает IQueryable для всей таблицы .
+        /// </summary>
+        Task<IQueryable<TEntity>> GetAllAsync();
+
+
         /// <summary>
         /// Асинхронно находит сущность по её идентификатору.
         /// </summary>

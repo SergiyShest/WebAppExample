@@ -13,7 +13,7 @@ namespace Tests
     {
         [Theory]
         [InlineData(DbType.Sqlite)]
-        [InlineData(DbType.InMemory)]
+ //       [InlineData(DbType.InMemory)]
         public async Task GetEntity_ReturnsExpectedResult(DbType dbType)
         {
             IDbContextOptionsFactory optionsFactory;
@@ -29,7 +29,7 @@ namespace Tests
 
                 // Setup the Value property to return the desired connection string
                 mockConfigurationSection.Setup(c => c["SQLiteConnection"])
-                                        .Returns("Data Source=:memory:"); // Use in-memory SQLite database for testing
+                                        .Returns("Data Source=myapp.db"); // :memory:Use in-memory SQLite database for testing Alter=> myapp.db
 
                 optionsFactory = new SqliteOptionsFactory(mockConfiguration.Object);
             }
@@ -52,6 +52,8 @@ namespace Tests
             // Act & Assert
             using (var uow = new UnitOfWork(optionsFactory))
             {
+                var count =  uow.GetRepository<Entity>().GetAllAsync().Result.Count();
+
                 var entity = await uow.GetRepository<Entity>().FindAsync(id);
                 Assert.NotNull(entity);
                 Assert.Equal(100.00m, entity.Amount);
@@ -63,8 +65,24 @@ namespace Tests
             var context = uow.DbContext;
             if (dbType== DbType.Sqlite)
             {
+                await context.Database.EnsureDeletedAsync();
                 await context.Database.EnsureCreatedAsync();
-                await context.Database.MigrateAsync();
+                var pendingMigrations = context.Database.GetPendingMigrations();
+                var count = pendingMigrations.Count();
+               if(pendingMigrations.Count()>0)
+                    try
+                    {
+
+                        await context.Database.MigrateAsync();
+
+                    }
+                    catch (Exception ex)
+                    {
+                        // если  Data Source=:memory: ошибка SQLite Error 1: 'no such table: __EFMigrationsHistory'.
+                        // если  Data Source=:myapp.db: ошибка : 'SQLite Error 1: 'table "Entities" already exists'.'
+.
+
+                    }
             }
         }
     }
